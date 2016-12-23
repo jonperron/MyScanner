@@ -8,6 +8,7 @@ Tornado server used as back-end. The server is running on port 8001 by default.
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
+import tornado.websocket
 
 # Other modules
 from .functions import *
@@ -28,6 +29,20 @@ define("port",default=8001,help="run on the given port",type=int)
 class AliveHandler(tornado.web.RequestHandler):
     def get(self):
         self.render(json.dumps("Server alive"))
+
+
+class GetHostnameHandler(tornado.web.RequestHandler):
+    def get(self):
+        hostname = self.get_argument("hostname",None,True)
+        resolved_name, failure = hostname_resolve(hostname)
+        if failure:
+            self.render(json.dumps("Could not resolve this hostname."))
+        else:
+            self.render(json.dumps("IP: " + resolved_name))
+
+
+class ScanPortHandler(tornado.websocket.WebSocketHandler):
+    def open(self):
 
 
 # Tornado Application

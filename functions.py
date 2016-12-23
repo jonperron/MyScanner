@@ -60,4 +60,4 @@ def port_scanner(hostname,port):
     else:
         status = "HOSTNOTAVAIL"
 
-    return status
+    return port,status

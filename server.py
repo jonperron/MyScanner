@@ -11,8 +11,7 @@ import tornado.web
 import tornado.websocket
 
 # Other modules
-from .functions import *
-from datetime import datetime
+from .functions import *    
 import json
 
 __author__ = "Jonathan Perron"
@@ -43,7 +42,28 @@ class GetHostnameHandler(tornado.web.RequestHandler):
 
 class ScanPortHandler(tornado.websocket.WebSocketHandler):
     def open(self):
+        self.write_message("Scan in progress")
 
+    def on_message(self, message):
+        # Message form : hostname,start_port,end_port
+        hostname = message.split(',')[0]
+        start_port = message.split(',')[1]
+        end_port = message.split(',')[2]
+        for port in range(start_port,end_port+1):
+            scanned_port, status = port_scanner(hostname,port)
+            if status == "HOSTNOTAVAIL":
+                self.write_message({'port':scanned_port,'status':'Host not available'})
+                self.close()
+                break
+            elif status == "COULDNOTCONNECT":
+                self.write_message({'port':scanned_port,'status':'Could not connect to host'})
+                self.close()
+                break
+            else:
+                self.write_message({'port':scanned_port,'status':status})
+
+    def on_close(self):
+        self.write_message("Scan stopped")
 
 # Tornado Application
 class App(tornado.web.Application):
@@ -58,7 +78,7 @@ class App(tornado.web.Application):
             'default_handler_class' : tornado.web.RedirectHandler,
             'default_handler_args' : {"url":"/"},
         ]
-        super(Application, self).__init__(handlers, **settings)
+        super(App, self).__init__(handlers, **settings)
 
 def main():
     http_server = tornado.httpserver.HTTPServer(App())

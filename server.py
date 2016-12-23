@@ -11,7 +11,7 @@ import tornado.web
 import tornado.websocket
 
 # Other modules
-from .functions import *    
+from .functions import *
 import json
 
 __author__ = "Jonathan Perron"
@@ -73,11 +73,11 @@ class App(tornado.web.Application):
             tornado.web.url(r"^/get_hostname/$",GetHostnameHandler,name="get_hostname"),
             tornado.web.url(r"^/scan_port/$",ScanPortHandler,name="scan_port"),
         ]
-        settings = [
+        settings = {
             'autoreload' : True,
             'default_handler_class' : tornado.web.RedirectHandler,
             'default_handler_args' : {"url":"/"},
-        ]
+        }
         super(App, self).__init__(handlers, **settings)
 
 def main():

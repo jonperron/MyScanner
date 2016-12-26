@@ -11,8 +11,7 @@ import tornado.web
 import tornado.websocket
 
 # Other modules
-from .functions import *
-import json
+from functions import *
 
 __author__ = "Jonathan Perron"
 __license__ = "MIT License"
@@ -27,17 +26,20 @@ define("port",default=8001,help="run on the given port",type=int)
 # Request handlers
 class AliveHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render(json.dumps("Server alive"))
+        self.write("Server alive")
 
 
 class GetHostnameHandler(tornado.web.RequestHandler):
     def get(self):
         hostname = self.get_argument("hostname",None,True)
-        resolved_name, failure = hostname_resolve(hostname)
-        if failure:
-            self.render(json.dumps("Could not resolve this hostname."))
+        if hostname:
+            resolved_name, failure = hostname_resolve(hostname)
+            if failure:
+                self.write("Could not resolve this hostname.")
+            else:
+                self.write("IP: " + resolved_name)
         else:
-            self.render(json.dumps("IP: " + resolved_name))
+            self.write("No hostname has been provided.")
 
 
 class ScanPortHandler(tornado.websocket.WebSocketHandler):
@@ -69,9 +71,9 @@ class ScanPortHandler(tornado.websocket.WebSocketHandler):
 class App(tornado.web.Application):
     def __init__(self):
         handlers = [
-            tornado.web.url(r"^/$",AliveHandler,name="home"),
-            tornado.web.url(r"^/get_hostname/$",GetHostnameHandler,name="get_hostname"),
-            tornado.web.url(r"^/scan_port/$",ScanPortHandler,name="scan_port"),
+            tornado.web.url(r"/",AliveHandler,name="home"),
+            tornado.web.url(r"/get_hostname/",GetHostnameHandler,name="get_hostname"),
+            tornado.web.url(r"/scan_port/",ScanPortHandler,name="scan_port"),
         ]
         settings = {
             'autoreload' : True,

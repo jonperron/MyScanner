@@ -27,13 +27,13 @@ class TestBackEnd(AsyncHTTPTestCase):
 		page = self.fetch('/')
 		self.assertEqual(page.code,200)
 
-	# def test_hostname_isalive(self):
-	# 	page = urlopen('http://localhost:8001/get_hostname/?hostname=localhost')
-	# 	self.assertEqual(a.msg,'OK')
+	def test_hostname_isalive(self):
+		page = urlopen('http://localhost:8001/get_hostname/?hostname=localhost')
+		self.assertEqual(a.msg,'OK')
 
-	# def test_websocket_isalive(self):
-	# 	ws = create_connection('ws://127.0.0.1:8001/scan_port/')
-	# 	self.assertEqual(ws.recv(),'Scan in progress')
+	def test_websocket_isalive(self):
+		ws = create_connection('ws://127.0.0.1:8001/scan_port/')
+		self.assertEqual(ws.recv(),'Scan in progress')
 
 if __name__ == '__main__':
 	unittest.main()

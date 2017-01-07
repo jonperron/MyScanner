@@ -9,7 +9,7 @@ So far it includes:
 - Port scanner
 """
 
-import socket
+import socket,re
 
 __author__ = "Jonathan Perron"
 __license__ = "MIT License"
@@ -24,6 +24,14 @@ def hostname_resolve(hostname):
     :param hostname
     :return:
     """
+    # check if hostname is already an IPV4 address
+    ip_regex = "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+    pattern = re.compile(ip_regex)
+    if pattern.match(hostname) is not None:
+        resolve = hostname
+        failed = False
+        return resolve, failed
+
     try:
         resolve = socket.gethostbyname(hostname)
         failed = False

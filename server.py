@@ -51,7 +51,7 @@ class ScanPortHandler(tornado.websocket.WebSocketHandler):
         hostname = message.split(',')[0]
         start_port = message.split(',')[1]
         end_port = message.split(',')[2]
-        for port in range(start_port,end_port+1):
+        for port in range(int(start_port),int(end_port)+1):
             scanned_port, status = port_scanner(hostname,port)
             if status == "HOSTNOTAVAIL":
                 self.write_message({'port':scanned_port,'status':'Host not available'})
